@@ -5,30 +5,22 @@ import pickle
 app = Flask(__name__)
 
 # Load the saved Random Forest model
-with open('random_forest_model.pkl', 'rb') as f:
+with open('random_forest_regression_model3.pkl', 'rb') as f:
     trained_trees = pickle.load(f)
 
-# Define the prediction function
+# Helper function to predict with a single tree
+def predict_tree(node, row):
+    if isinstance(node, (int, float)):  # Leaf node
+        return node
+    if row[node['feature_idx']] <= node['threshold']:  # Go left
+        return predict_tree(node['left'], row)
+    else:  # Go right
+        return predict_tree(node['right'], row)
+
+# Helper function to predict using the random forest (bagging)
 def predict(trees, input_data):
-    # Helper function to predict using the random forest
-    def bagging_predict(trees, row):
-        predictions = [predict_tree(tree, row) for tree in trees]
-        return max(set(predictions), key=predictions.count)
-    
-    # Helper function to predict with a single tree
-    def predict_tree(node, row):
-        if row[node['index']] < node['value']:
-            if isinstance(node['left'], dict):
-                return predict_tree(node['left'], row)
-            else:
-                return node['left']
-        else:
-            if isinstance(node['right'], dict):
-                return predict_tree(node['right'], row)
-            else:
-                return node['right']
-    
-    return bagging_predict(trees, input_data)
+    predictions = [predict_tree(tree, input_data) for tree in trees]
+    return np.mean(predictions)  # For regression, return the average prediction
 
 @app.route('/')
 def home():
@@ -41,8 +33,8 @@ def predict_endpoint():
         input_json = request.json
         
         # Extract features in the correct order
-        feature_order = ['Rainfall', 'Avg Temp', 'Relative Humidity', 'Sand %', 
-                         'PH Level', 'Phosohorus', 'Potassium', 'Clay %']
+        feature_order = ['Rainfall', 'AvgTemp', 'RelativeHumidity','SoilTemp', 'Sand', 
+                         'PHLevel', 'Phosohorus', 'Potassium', 'Clay','ProductionArea']
         input_data = [input_json[feature] for feature in feature_order]
         
         # Ensure input is a NumPy array
@@ -51,12 +43,18 @@ def predict_endpoint():
         # Make a prediction
         prediction = predict(trained_trees, input_data[0])
         
+        data = request.get_json()
+        print("Received data: ", data)  # Debugging line to check the input
+
+    
+
         # Return the result
-        return jsonify({'prediction': int(prediction)})
+        print("prediction",prediction)
+        return jsonify({'prediction': prediction})
     except KeyError as e:
         return jsonify({'error': f"Missing feature: {str(e)}"})
     except Exception as e:
         return jsonify({'error': str(e)})
 
-if __name__ == '__main__':
-    app.run(debug=True)
+if __name__ == "__main__":
+    app.run(debug=True, host='0.0.0.0', port=5000)
