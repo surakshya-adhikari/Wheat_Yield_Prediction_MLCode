@@ -5,7 +5,7 @@ import pickle
 app = Flask(__name__)
 
 # Load the saved Random Forest model
-with open('random_forest_regression_model3.pkl', 'rb') as f:
+with open('random_forest_regression_model.pkl', 'rb') as f:
     trained_trees = pickle.load(f)
 
 # Helper function to predict with a single tree
@@ -34,7 +34,7 @@ def predict_endpoint():
         
         # Extract features in the correct order
         feature_order = ['Rainfall', 'AvgTemp', 'RelativeHumidity','SoilTemp', 'Sand', 
-                         'PHLevel', 'Phosohorus', 'Potassium', 'Clay','ProductionArea']
+                         'PHLevel', 'Phosphorus', 'Potassium', 'Clay','ProductionArea']
         input_data = [input_json[feature] for feature in feature_order]
         
         # Ensure input is a NumPy array

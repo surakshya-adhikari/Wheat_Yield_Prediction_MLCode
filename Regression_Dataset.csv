@@ -1,4 +1,4 @@
-Rainfall,AvgTemp,RelativeHumidity,SoilTemp,Sand,PHLevel,Phosohorus,Potassium,Clay,ProductionArea,PRODUCTION
+Rainfall,AvgTemp,RelativeHumidity,SoilTemp,Sand,PHLevel,Phosphorus,Potassium,Clay,ProductionArea,PRODUCTION
 166.32,15.0,52.0,14.823140169426424,50.434,6.2,68.23,380.0,17.932,7215.0,12030.0
 178.32,17.0,51.0,16.521641603759246,50.434,6.2,68.23,380.0,17.932,6100.0,11000.0
 122.35,16.0,49.0,16.042110132198744,50.434,6.2,68.23,380.0,17.932,7151.0,10010.0
